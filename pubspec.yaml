@@ -1,0 +1,63 @@
+name: dragon_center_linux
+description: A Flutter application for controlling MSI laptop features.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  provider: ^6.0.5
+  shared_preferences: ^2.2.0
+  path_provider: ^2.0.15
+  json_annotation: ^4.8.1
+  synchronized: ^3.3.0+3
+  fluttertoast: ^8.2.12
+  system_tray: ^2.0.3
+  dbus: ^0.7.11
+  path: ^1.8.3
+  logging: any
+  syncfusion_flutter_sliders: ^29.1.33
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.6
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/config/
+    - assets/images/
+
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

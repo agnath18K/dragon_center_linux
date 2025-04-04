@@ -1,0 +1,17 @@
+flutter_app: 
+  command: dragoncenter
+  arch: x64
+  parent: /usr/local/lib
+  nonInteractive: false
+
+control:
+  Package: dragoncenter
+  Version: 1.0.0
+  Architecture: amd64
+  Priority: optional
+  Depends:
+  Maintainer: agnath18
+  Description: Dragon Center For Linux
+  
+options:
+ exec_out_dir: debian/packages
