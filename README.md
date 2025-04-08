@@ -43,7 +43,6 @@ A modern Flutter application for controlling MSI laptop features with a beautifu
 ### ⚙️ System Configuration
 - Universal and Custom profile support
 - Persistent configuration storage
-- Automatic hardware detection
 - Profile switching capabilities
 
 ### 🎨 Modern UI/UX
@@ -181,23 +180,13 @@ sequenceDiagram
 - RPM monitoring (0-5000 RPM)
 - Temperature-based adjustment
 - Profile-based management
-- Emergency shutdown at critical temperatures
 
 #### Temperature Monitoring
 - Real-time sensor reading (500ms intervals)
 - Temperature thresholds:
   - Warning: 60°C
   - Critical: 80°C
-- Historical tracking
-- Alert system
 - Automatic fan speed adjustment
-
-#### Profile Management
-- Dynamic profile switching
-- Custom curve support
-- Hardware-specific presets
-- Profile validation
-- Backup/restore functionality
 
 ### Configuration Management
 
@@ -216,22 +205,7 @@ graph LR
 - Direct EC register access
 - Low-level hardware control
 - Real-time monitoring
-- Error handling and recovery
 - Hardware state validation
-
-#### Profile Management
-- JSON-based configuration
-- Version control
-- Profile validation
-- Migration support
-- Backup/restore functionality
-
-#### Performance Optimization
-- Efficient state management
-- Minimal hardware access
-- Caching mechanisms
-- Background processing
-- Resource management
 
 ## 📋 Prerequisites
 
@@ -280,25 +254,22 @@ sudo usermod -a -G ec $USER
 ### 2. Install Dragon Center
 
 1. Clone the repository:
-```bash
-git clone https://github.com/agnath18K/dragon_center_linux.git
-cd dragon_center_linux
-```
+    ```bash
+    git clone https://github.com/agnath18K/dragon_center_linux.git
+    cd dragon_center_linux
+    ```
 
-2. Install dependencies:
-```bash
-flutter pub get
-```
+2. Build and install the package:
+    ```bash
+    sudo dpkg -i debian/packages/dragoncenter_1.0.0_amd64.deb
+    ```
 
-3. Build the application:
-```bash
-flutter build linux
-```
+3. Launch the application:
+    ```bash
+    sudo /usr/local/lib/dragoncenter/dragon
+    ```
 
-4. Install the package:
-```bash
-sudo dpkg -i build/linux/x64/deb/dragon_center_linux_1.0.0+1_amd64.deb
-```
+**Note:** Ensure all prerequisites are met before installation.
 
 ### Troubleshooting
 
@@ -330,16 +301,11 @@ groups
 
 #### Universal Profile
 - Pre-configured settings
-- Hardware-specific optimizations
 - Automatic temperature management
-- Balanced performance settings
-- Power efficiency focus
 
 #### Custom Profile
 - User-defined fan curves
 - Temperature thresholds
-- Performance presets
-- Power management settings
 - Custom monitoring options
 
 ### Advanced Settings
@@ -347,16 +313,8 @@ groups
 #### Fan Control
 - Custom fan curves
 - Temperature thresholds
-- Response time settings
 - Minimum/maximum speeds
-- Zone-specific control
 
-#### Performance
-- CPU power limits
-- GPU power management
-- Thermal throttling
-- Power state control
-- Performance modes
 
 ## 🏗️ Project Structure
 

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0.0
-Name=dragoncenter
+Name=DragonCenter
 GenericName=dragoncenter
 Comment=Dragon Center For Linux
-Terminal=false
+Terminal=true
 Type=Application
 Categories=Utility;
 Keywords=Flutter;
