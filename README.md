@@ -12,6 +12,16 @@ A modern Flutter application for controlling MSI laptop features with a beautifu
 
 </div>
 
+
+<div align="center" style="margin: 2rem 0">  
+  <img src="https://github.com/user-attachments/assets/bc3c2dc8-9c44-4548-9d6b-9ab086a2fb63" width="40%" style="margin: 0.5rem">  
+  <img src="https://github.com/user-attachments/assets/7ed1552b-3d1b-4ab1-af73-6cf60dea7c19" width="40%" style="margin: 0.5rem"> 
+  <br>  
+  <img src="https://github.com/user-attachments/assets/cf790dd4-8fa1-4e2c-91b6-5574acf34c35" width="40%" style="margin: 0.5rem">  
+  <img src="https://github.com/user-attachments/assets/b3288dbf-8e7c-4812-93ea-d5123bdcd5b7" width="40%" style="margin: 0.5rem">  
+</div>
+
+
 ## 📑 Table of Contents
 - [Features](#-features)
 - [Technical Architecture](#-technical-architecture)
