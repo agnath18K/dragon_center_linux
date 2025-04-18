@@ -21,6 +21,7 @@ dependencies:
   path: ^1.8.3
   logging: any
   syncfusion_flutter_sliders: ^29.1.33
+  window_manager: ^0.3.8
 
 dev_dependencies:
   flutter_test:
@@ -36,28 +37,28 @@ flutter:
     - assets/config/
     - assets/images/
 
-  
-  
 
-  
-  
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

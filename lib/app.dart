@@ -1,8 +1,38 @@
 import 'package:dragon_center_linux/core/presentation/pages/setup_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
-class DragonCentreApp extends StatelessWidget {
+class DragonCentreApp extends StatefulWidget {
   const DragonCentreApp({super.key});
+
+  @override
+  State<DragonCentreApp> createState() => _DragonCentreAppState();
+}
+
+class _DragonCentreAppState extends State<DragonCentreApp> with WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    _init();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  void _init() async {
+    // Set to false to prevent window close when X is clicked
+    await windowManager.setPreventClose(true);
+  }
+
+  @override
+  void onWindowClose() async {
+    // When user clicks the X button, hide window instead of closing the app
+    await windowManager.hide();
+  }
 
   @override
   Widget build(BuildContext context) {

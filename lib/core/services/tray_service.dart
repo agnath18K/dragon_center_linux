@@ -2,6 +2,8 @@ import 'package:system_tray/system_tray.dart';
 import 'package:dragon_center_linux/core/utils/logger.dart';
 import 'package:dragon_center_linux/features/fan_control/presentation/viewmodels/fan_control_viewmodel.dart';
 import 'package:path/path.dart' as path;
+import 'package:window_manager/window_manager.dart';
+import 'dart:io';
 
 class TrayService {
   static final TrayService _instance = TrayService._internal();
@@ -17,16 +19,22 @@ class TrayService {
     if (_isInitialized) return;
 
     try {
+      // Get the appropriate icon path based on environment
+      final iconPath = _getIconPath();
+
+      logger.info('Using icon path: $iconPath');
+
       await _systemTray.initSystemTray(
         title: "Dragon Center",
-        iconPath: path.join('assets', 'images', 'dragon.png'),
+        iconPath: iconPath,
+        toolTip: "MSI Dragon Center", // Added tooltip parameter
       );
 
       await _createMenu();
 
       _systemTray.registerSystemTrayEventHandler((eventName) {
         if (eventName == kSystemTrayEventClick) {
-          _systemTray.popUpContextMenu();
+          _handleShow(); // Show app on left click
         } else if (eventName == kSystemTrayEventRightClick) {
           _systemTray.popUpContextMenu();
         }
@@ -36,8 +44,21 @@ class TrayService {
       logger.info('System tray initialized successfully');
     } catch (e) {
       logger.severe('Failed to initialize system tray: $e');
-      _isInitialized = true;
+      _isInitialized = false;
     }
+  }
+
+  String _getIconPath() {
+    // Check if running in production environment
+    final prodPath =
+        '/usr/local/lib/dragoncenter/data/flutter_assets/assets/images/dragon.png';
+
+    if (File(prodPath).existsSync()) {
+      return prodPath;
+    }
+
+    // Development environment (relative path)
+    return path.join('assets', 'images', 'dragon.png');
   }
 
   Future<void> _createMenu() async {
@@ -45,6 +66,11 @@ class TrayService {
       final showItem = MenuItemLabel(
         label: 'Show Dragon Center',
         onClicked: (menuItem) => _handleShow(),
+      );
+
+      final hideItem = MenuItemLabel(
+        label: 'Hide Dragon Center',
+        onClicked: (menuItem) => _handleHide(),
       );
 
       final fanProfileSubMenu = SubMenu(
@@ -102,6 +128,7 @@ class TrayService {
 
       await _menu.buildFrom([
         showItem,
+        hideItem,
         MenuSeparator(),
         fanProfileSubMenu,
         MenuSeparator(),
@@ -116,11 +143,30 @@ class TrayService {
     }
   }
 
-  void _handleShow() {
+  Future<void> _handleShow() async {
     try {
-      logger.info('Show Dragon Center clicked');
+      final isVisible = await windowManager.isVisible();
+
+      if (!isVisible) {
+        await windowManager.show();
+        await windowManager.focus();
+      } else {
+        // If already visible, bring to front
+        await windowManager.focus();
+      }
+
+      logger.info('Window shown');
     } catch (e) {
       logger.severe('Failed to handle show window: $e');
+    }
+  }
+
+  Future<void> _handleHide() async {
+    try {
+      await windowManager.hide();
+      logger.info('Window hidden');
+    } catch (e) {
+      logger.severe('Failed to handle hide window: $e');
     }
   }
 
@@ -145,6 +191,7 @@ class TrayService {
   Future<void> _handleExit() async {
     try {
       await dispose();
+      await windowManager.destroy();
     } catch (e) {
       logger.severe('Failed to handle exit: $e');
     }

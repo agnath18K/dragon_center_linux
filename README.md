@@ -229,9 +229,29 @@ graph LR
 
 ## 🚀 Installation
 
-### 1. Install ACPI EC Driver
+### Using the Installer Script (Recommended)
 
-First, install the required ACPI EC driver:
+The Dragon Center comes with an automated installer script that handles all setup tasks:
+
+```bash
+# Clone the repository if you haven't already
+git clone https://github.com/agnath18K/dragon_center_linux.git
+cd dragon_center_linux
+
+# Run the installer script with sudo
+sudo ./install_dragon_service.sh
+```
+
+The installer script provides three options:
+1. **Full Install** - Installs the ACPI EC driver, adds your user to the 'ec' group, installs the .deb package, and sets up the systemd service
+2. **Service-Only Install** - Only sets up the systemd service (useful if you've already installed the driver and application)
+3. **Uninstall** - Removes the Dragon service, ACPI EC driver, and optionally the application files
+
+### Manual Installation (Advanced)
+
+If you prefer to install components manually:
+
+#### 1. Install ACPI EC Driver
 
 ```bash
 # Clone the acpi_ec repository
@@ -251,25 +271,46 @@ sudo usermod -a -G ec $USER
 
 **Note:** You'll need to log out and back in for the group changes to take effect.
 
-### 2. Install Dragon Center
+#### 2. Install Dragon Center Application
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/agnath18K/dragon_center_linux.git
-    cd dragon_center_linux
-    ```
+```bash
+# Install the package
+sudo dpkg -i debian/packages/dragoncenter_1.0.0_amd64.deb
+```
 
-2. Build and install the package:
-    ```bash
-    sudo dpkg -i debian/packages/dragoncenter_1.0.0_amd64.deb
-    ```
+#### 3. Configure Systemd Service
 
-3. Launch the application:
-    ```bash
-    sudo /usr/local/lib/dragoncenter/dragon
-    ```
+Create a systemd service file at `/etc/systemd/system/dragon-service.service`:
 
-**Note:** Ensure all prerequisites are met before installation.
+```
+[Unit]
+Description=Flutter Binary Service for Dragon
+After=display-manager.service
+Wants=display-manager.service
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/bash -lc "xhost +SI:localuser:root"
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/local/lib/dragoncenter/dragon
+WorkingDirectory=/usr/local/lib/dragoncenter
+Restart=always
+RestartSec=5
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/YOUR_USERNAME/.Xauthority
+ExecStop=/bin/kill -s SIGTERM $MAINPID
+
+[Install]
+WantedBy=graphical.target
+```
+
+Then enable and start the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable dragon-service.service
+sudo systemctl start dragon-service.service
+```
 
 ### Troubleshooting
 
