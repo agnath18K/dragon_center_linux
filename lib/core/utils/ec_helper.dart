@@ -4,7 +4,7 @@ import 'package:synchronized/synchronized.dart';
 import 'package:dragon_center_linux/core/utils/logger.dart';
 
 class ECHelper {
-  static const String _ecIoFile = '/dev/ec0';
+  static const String _ecIoFile = '/sys/kernel/debug/ec/ec0/io';
 
   static final _lock = Lock();
 
@@ -68,10 +68,13 @@ class ECHelper {
           logger.warning('  Bytes read: ${bytes.length}');
           return 0;
         }
-        final result = bytes[1];
+
+        // Combine the two bytes into a 16-bit integer (little-endian)
+        final result = bytes[0] | (bytes[1] << 8);
+
         logger.info(
             '  Raw bytes: [0x${bytes[0].toRadixString(16).padLeft(2, '0')}, 0x${bytes[1].toRadixString(16).padLeft(2, '0')}]');
-        logger.info('  Calculated RPM: $result');
+        logger.info('  Combined raw value: $result');
         logger.info('  Status: Success');
         return result;
       } catch (e) {

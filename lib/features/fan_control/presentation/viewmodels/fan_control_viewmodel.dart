@@ -72,8 +72,11 @@ class DragonControlProvider extends ChangeNotifier {
       final cpuRaw = await ECHelper.readRPM(FanConfig.rpmAddresses[0]);
       final gpuRaw = await ECHelper.readRPM(FanConfig.rpmAddresses[1]);
 
-      final cpuRpm = (cpuRaw * _configManager.currentConfig.rpmDivisor) ~/ 1000;
-      final gpuRpm = (gpuRaw * _configManager.currentConfig.rpmDivisor) ~/ 1000;
+      // Fix: Use correct formula matching temperature_viewmodel.dart
+      final cpuRpm =
+          cpuRaw > 0 ? _configManager.currentConfig.rpmDivisor ~/ cpuRaw : 0;
+      final gpuRpm =
+          gpuRaw > 0 ? _configManager.currentConfig.rpmDivisor ~/ gpuRaw : 0;
 
       logger.fine('CPU RPM calculation: raw=$cpuRaw, rpm=$cpuRpm');
       logger.fine('GPU RPM calculation: raw=$gpuRaw, rpm=$gpuRpm');

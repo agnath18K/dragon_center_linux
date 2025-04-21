@@ -16,7 +16,7 @@ class AppConfig {
     'UI': Level.WARNING,
   };
 
-  static const String ecPath = '/dev/ec0';
+  static const String ecPath = '/sys/kernel/debug/ec/ec0/io';
   static const int ecSize = 256;
   static const int ecBase = 0x62;
   static const int ecData = 0x66;
