@@ -112,6 +112,101 @@ EOF
         "Dragon service installed and started successfully!" 8 50
 }
 
+# Install only the Debian package
+install_deb_only() {
+    whiptail --title "Dragon Package Install 📦" --msgbox \
+        "This will install only the Dragon Center Debian package.\n\nThe ACPI EC driver and systemd service will not be configured." 12 60
+
+    # Check if .deb package exists
+    DEB_PATH="debian/packages/dragoncenter_1.0.1_amd64.deb"
+    if [ ! -f "$DEB_PATH" ]; then
+        whiptail --title "Package Not Found" --msgbox \
+            "Error: .deb package not found at $DEB_PATH\n\nPlease ensure the package exists and retry." 10 60
+        exit 1
+    fi
+
+    # Install the package
+    whiptail --title "Installing Package..." --infobox \
+        "Installing Dragon Center package...\nPlease wait." 8 50
+
+    if dpkg -i "$DEB_PATH"; then
+        whiptail --title "Success ✅" --msgbox \
+            "Dragon Center package installed successfully!\n\nNote: You may still need to configure the ACPI EC driver and service manually for full functionality." 12 60
+    else
+        whiptail --title "Installation Failed ❌" --msgbox \
+            "Failed to install the Dragon Center package.\n\nPlease check the package integrity and try again." 10 60
+        exit 1
+    fi
+}
+
+# Install only the ACPI EC driver
+install_driver_only() {
+    whiptail --title "ACPI EC Driver Installation 🔌" --msgbox \
+        "This will install only the ACPI EC driver, which is required for hardware access.\n\nThe Dragon Center application and service will not be installed." 12 60
+
+    # Clone the repository if it doesn't exist
+    if [ ! -d "acpi_ec" ]; then
+        whiptail --title "Cloning Repository" --infobox \
+            "Cloning ACPI EC driver repository...\nPlease wait." 8 50
+        
+        if ! git clone https://github.com/agnath18K/acpi_ec.git; then
+            whiptail --title "Error ❌" --msgbox \
+                "Failed to clone acpi_ec repository.\n\nPlease check your internet connection and try again." 10 60
+            exit 1
+        fi
+    fi
+
+    # Install dependencies and build the driver
+    whiptail --title "Installing Dependencies" --infobox \
+        "Installing build dependencies...\nPlease wait." 8 50
+    
+    cd acpi_ec || exit 1
+    apt update
+    if ! apt install -y build-essential linux-headers-$(uname -r); then
+        whiptail --title "Error ❌" --msgbox \
+            "Failed to install build dependencies.\n\nPlease check your system and try again." 10 60
+        cd ..
+        exit 1
+    fi
+
+    # Run the installation script
+    whiptail --title "Installing Driver" --infobox \
+        "Installing ACPI EC driver...\nPlease wait." 8 50
+    
+    if ! ./install.sh; then
+        whiptail --title "Error ❌" --msgbox \
+            "ACPI EC driver installation failed.\n\nPlease check the output for errors and try again." 10 60
+        cd ..
+        exit 1
+    fi
+
+    # Add user to ec group
+    ORIGINAL_USER=${SUDO_USER:-$(logname)}
+    if ! grep -q "^ec:" /etc/group; then
+        groupadd ec
+    fi
+    
+    if ! groups "$ORIGINAL_USER" | grep -q "\bec\b"; then
+        if ! usermod -a -G ec "$ORIGINAL_USER"; then
+            whiptail --title "Warning ⚠️" --msgbox \
+                "Failed to add $ORIGINAL_USER to 'ec' group.\n\nYou may need to manually add your user to the 'ec' group." 10 60
+        fi
+    fi
+
+    cd ..
+
+    # Cleanup
+    whiptail --title "Cleanup" --yesno \
+        "Do you want to remove the temporary driver source files?" 8 60
+    
+    if [ $? -eq 0 ]; then
+        rm -rf acpi_ec
+    fi
+
+    whiptail --title "Success ✅" --msgbox \
+        "ACPI EC driver installed successfully!\n\nYou may need to reboot your system for the driver to take effect." 10 60
+}
+
 # Full install: driver, .deb, then service
 full_install() {
     whiptail --title "Dragon Full Installer 🐉" --msgbox \
@@ -151,7 +246,7 @@ full_install() {
     cd ..
 
     # Step 2: .deb package
-    DEB_PATH="debian/packages/dragoncenter_1.0.0_amd64.deb"
+    DEB_PATH="debian/packages/dragoncenter_1.0.1_amd64.deb"
     if [ -f "$DEB_PATH" ]; then
         dpkg -i "$DEB_PATH" || {
             whiptail --title "Error" --msgbox \
@@ -224,8 +319,10 @@ Are you sure?" 15 60
 
 # Main menu
 CHOICE=$(whiptail --title "Dragon Installer Main Menu" --menu \
-    "Select an option:" 15 60 4 \
+    "Select an option:" 15 60 6 \
     "install" "Full install (driver + .deb + service)" \
+    "install-driver" "Install only the ACPI EC driver" \
+    "install-deb" "Install only the .deb package" \
     "install-service" "Service-only install" \
     "uninstall" "Uninstall everything" \
     "exit" "Exit script" 3>&1 1>&2 2>&3)
@@ -233,6 +330,12 @@ CHOICE=$(whiptail --title "Dragon Installer Main Menu" --menu \
 case "$CHOICE" in
     install)
         full_install
+        ;;
+    install-driver)
+        install_driver_only
+        ;;
+    install-deb)
+        install_deb_only
         ;;
     install-service)
         install_service
