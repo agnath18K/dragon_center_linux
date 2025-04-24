@@ -285,7 +285,7 @@ sudo usermod -a -G ec $USER
 
 ```bash
 # Install the package
-sudo dpkg -i debian/packages/dragoncenter_1.0.1_amd64.deb
+sudo dpkg -i debian/packages/dragoncenter_1.0.0_amd64.deb
 ```
 
 #### 3. Configure Systemd Service
